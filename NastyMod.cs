@@ -33,15 +33,15 @@ public class NastyModClass : MelonMod
     private int buttonHeight = 30;
     private int buttonSpacing = 10;
 
-    private int menuWidth = 650;
-    private int menuHeight = 500;
+    private int menuWidth = 800;
+    private int menuHeight = 600;
     private int menuSpacing = 15;
 
     private int tabWidth = 0;
     private int tabHeight = 0;
 
     private int menuTab = 0;
-    private readonly List<string> menuTabs = new List<string> { "Player", "World", "Spawner", "Misc", "Employees", "Credits" };
+    private readonly List<string> menuTabs = new List<string> { "Player", "World", "Spawner", "Misc", "Employees", "Teleport", "Credits" };
 
     private Dictionary<string, List<string>> itemTree;
     private List<string> propertys;
@@ -57,6 +57,7 @@ public class NastyModClass : MelonMod
     private bool _infiniteStamina = false;
     private bool _neverWanted = false;
     private bool _ESP = false;
+    private float _espDistance = 25f;
     private float _moveSpeedMultiplier = 1f;
     private float _crouchSpeedMultiplier = 0.6f;
     private float _jumpMultiplier = 1f;
@@ -67,6 +68,87 @@ public class NastyModClass : MelonMod
 
     private string _selectedProperty = "barn";
     private Vector2 _employeeSpawnerPropertyScrollPosition;
+
+    private Vector2 _playerTabScrollPosition;
+    private Vector2 _worldTabScrollPosition;
+    private Vector2 _miscTabScrollPosition;
+    private Vector2 _creditsTabScrollPosition;
+    private Vector2 _npcTeleportScrollPosition;
+
+    private readonly Dictionary<string, string> _npcIdMap = new Dictionary<string, string>
+    {
+        { "kylecooley", "Kyle_Cooley" },
+        { "austinsteiner", "Austin_Steiner" },
+        { "alberthoover", "Albert_Hoover" },
+        { "jessiwaters", "Jessi_Waters" },
+        { "kathyhenderson", "Kathy_Henderson" },
+        { "micklubbin", "Mick_Lubbin" },
+        { "samthompson", "Sam_Thompson" },
+        { "peterfile", "Peter_File" },
+        { "donnamartin", "Donna_Martin" },
+        { "geraldinepoon", "Geraldine_Poon" },
+        { "chloebowers", "Chloe_Bowers" },
+        { "peggymyers", "Peggy_Myers" },
+        { "benjicoleman", "Benji_Coleman" },
+        { "ludwigmeyer", "Ludwig_Meyer" },
+        { "bethpenn", "Beth_Penn" },
+        { "mrs.ming", "Mrs._Ming" },
+        { "trentsherman", "Trent_Sherman" },
+        { "megcooley", "Meg_Cooley" },
+        { "joyceball", "Joyce_Ball" },
+        { "keithwagner", "Keith_Wagner" },
+        { "shirleywatts", "Shirley_Watts" },
+        { "jerrymontero", "Jerry_Montero" },
+        { "dorislubbin", "Doris_Lubbin" },
+        { "kimdelaney", "Kim_Delaney" },
+        { "deanwebster", "Dean_Webster" },
+        { "mollypresley", "Molly_Presley" },
+        { "charlesrowland", "Charles_Rowland" },
+        { "georgegreene", "George_Greene" },
+        { "elizabethhomley", "Elizabeth_Homley" },
+        { "jenniferrivera", "Jennifer_Rivera" },
+        { "kevinoakley", "Kevin_Oakley" },
+        { "louisfourier", "Louis_Fourier" },
+        { "lucypennington", "Lucy_Pennington" },
+        { "randycaulfield", "Randy_Caulfield" },
+        { "bradcrosby", "Brad_Crosby" },
+        { "eugenebuckley", "Eugene_Buckley" },
+        { "gregfiggle", "Greg_Figgle" },
+        { "jeffgilmore", "Jeff_Gilmore" },
+        { "phillipwentworth", "Phillip_Wentworth" },
+        { "annachesterfield", "Anna_Chesterfield" },
+        { "lisagardener", "Lisa_Gardener" },
+        { "genghisbarn", "Genghis_Barn" },
+        { "crankyfrank", "Cranky_Frank" },
+        { "javierperez", "Javier_Perez" },
+        { "marcobarone", "Marco_Baron" },
+        { "melissawood", "Melissa_Wood" },
+        { "salvadormoreno", "Salvador_Moreno" },
+        { "maccooper", "Mac_Cooper" },
+        { "billykramer", "Billy_Kramer" },
+        { "janelucero", "Jane_Lucero" },
+        { "chrissullivan", "Chris_Sullivan" },
+        { "hankstevenson", "Hank_Stevenson" },
+        { "karenkennedy", "Karen_Kennedy" },
+        { "alisonknight", "Alison_Knight" },
+        { "jeremywilkinson", "Jeremy_Wilkinson" },
+        { "carlbundy", "Carl_Bundy" },
+        { "jackiestevenson", "Jackie_Stevenson" },
+        { "jackknight", "Jack_Knight" },
+        { "haroldcolt", "Harold_Colt" },
+        { "weilong", "Wei_Long" },
+        { "denniskennedy", "Dennis_Kennedy" },
+        { "fionahancock", "Fiona_Hancock" },
+        { "lilyturner", "Lily_Turner" },
+        { "rayhoffman", "Ray_Hoffman" },
+        { "jenheard", "Jen_Heard" },
+        { "waltercussler", "Walter_Cussler" },
+        { "leorivers", "Leo_Rivers" },
+        { "herbetbleuball", "Herbet_Bleuball" },
+        { "michaelboog", "Michael_Boog" },
+        { "tobiaswentworth", "Tobias_Wentworth" },
+        { "pearlmoore", "Pearl_Moore" }
+    };
 
     private GUIStyle _titleStyle;
     private GUIStyle _headerStyle;
@@ -161,7 +243,7 @@ public class NastyModClass : MelonMod
             {
                 if (npcs.FirstName == String.Empty) continue;
                 float dist = Vector3.Distance(Player.Local.transform.position, npcs.transform.position);
-                if (dist > 25f) continue; //Implement distance slider
+                if (dist > _espDistance) continue;
                 Vector3 screenPosition = Camera.main.WorldToScreenPoint(npcs.transform.position);
                 if (screenPosition.z < 0) continue; //hides boxes for entities behind you.
                 Vector2 start = new Vector2(Screen.width / 2, Screen.height);
@@ -220,7 +302,7 @@ public class NastyModClass : MelonMod
         GUILayout.EndHorizontal();
         GUILayout.EndArea();
         // ***********************
-
+        
         // **Tabs**
         GUILayout.BeginArea(new Rect(15, 95, menuWidth - (menuSpacing * 2), menuHeight - 110), GUI.skin.box);
         switch (menuTab)
@@ -248,6 +330,9 @@ public class NastyModClass : MelonMod
                 RenderEmployeesTab();
                 break;
             case 5:
+                RenderTeleportTab();
+                break;
+            case 6:
                 RenderCreditsTab();
                 break;
         }
@@ -266,6 +351,9 @@ public class NastyModClass : MelonMod
 
         // Spacer
         GUILayout.Space(10);
+
+        // ** Scrollable content
+        _playerTabScrollPosition = GUILayout.BeginScrollView(_playerTabScrollPosition, GUILayout.Width(menuWidth - (menuSpacing * 4)), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 60));
 
         // ** God Mode toggle
         GUILayout.BeginHorizontal();
@@ -321,19 +409,14 @@ public class NastyModClass : MelonMod
         PlayerMovement.Instance.MoveSpeedMultiplier = _moveSpeedMultiplier;
         GUILayout.EndHorizontal();
 
-        // ** Crouch speed slider
-        GUILayout.BeginHorizontal();
-        GUILayout.Label("Crouch speed multiplier: " + _crouchSpeedMultiplier);
-        _crouchSpeedMultiplier = (float)GUILayout.HorizontalSlider(_crouchSpeedMultiplier, 0.6f, 10f, GUILayout.Width(180), GUILayout.Height(10));
-        PlayerMovement.Instance.crouchSpeedMultipler = _crouchSpeedMultiplier;
-        GUILayout.EndHorizontal();
-
         // ** Jump Multiplier slider
         GUILayout.BeginHorizontal();
         GUILayout.Label("Jump Multiplier: " + _jumpMultiplier);
         _jumpMultiplier = GUILayout.HorizontalSlider(_jumpMultiplier, 1f, 10f, GUILayout.Width(180), GUILayout.Height(10));
         PlayerMovement.JumpMultiplier = _jumpMultiplier;
         GUILayout.EndHorizontal();
+
+        GUILayout.EndScrollView();
 
         GUILayout.EndArea();
     }
@@ -348,8 +431,10 @@ public class NastyModClass : MelonMod
         // Spacer
         GUILayout.Space(10);
 
-        // ** Coming soon...
-        // ** Infinite Energy toggle
+        // ** Scrollable content
+        _worldTabScrollPosition = GUILayout.BeginScrollView(_worldTabScrollPosition, GUILayout.Width(menuWidth - (menuSpacing * 4)), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 60));
+
+        // ** ESP toggle
         GUILayout.BeginHorizontal();
         GUILayout.Label("ESP (Box Based)");
         string status_ESP = _ESP ? "On" : "Off";
@@ -359,6 +444,17 @@ public class NastyModClass : MelonMod
             MelonLogger.Msg("ESP toggled!");
         }
         GUILayout.EndHorizontal();
+
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** ESP Distance slider
+        GUILayout.BeginHorizontal();
+        GUILayout.Label("ESP Distance: " + _espDistance.ToString("F0") + "m");
+        _espDistance = GUILayout.HorizontalSlider(_espDistance, 10f, 200f, GUILayout.Width(180), GUILayout.Height(10));
+        GUILayout.EndHorizontal();
+
+        GUILayout.EndScrollView();
 
         GUILayout.EndArea();
     }
@@ -396,6 +492,7 @@ public class NastyModClass : MelonMod
 
         #region Right side
         GUILayout.BeginArea(new Rect(((menuWidth - (menuSpacing * 4) - menuSpacing) / 4) + menuSpacing, 40, ((menuWidth - (menuSpacing * 4) - menuSpacing) / 4) * 3, menuHeight - 110 - (menuSpacing * 2) - 40));
+        
         // ** Item buttons
         int columns = 3;
         int currentColumn = 0;
@@ -445,6 +542,9 @@ public class NastyModClass : MelonMod
         // Spacer
         GUILayout.Space(10);
 
+        // ** Scrollable content
+        _miscTabScrollPosition = GUILayout.BeginScrollView(_miscTabScrollPosition, GUILayout.Width(menuWidth - (menuSpacing * 4)), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 60));
+
         // ** Default Stack Limit slider
         GUILayout.Label("Default Stack Limit: " + _moddedStackSize);
         _moddedStackSize = (int)GUILayout.HorizontalSlider(_moddedStackSize, 10, 250);
@@ -470,6 +570,44 @@ public class NastyModClass : MelonMod
                 args.Add(qualityType.ToString());
                 command.Execute(args);
             }
+        }
+        GUILayout.EndHorizontal();
+
+        // Spacer
+        GUILayout.Space(20);
+
+        // ** Package Product section
+        GUILayout.Label("Package Equipped Product");
+        GUILayout.Label("NOTE: You need to have a product equipped for this feature to work.");
+        
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** Package type buttons
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Baggie", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.PackageProduct command = new Il2CppScheduleOne.Console.PackageProduct();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add("Baggie");
+            command.Execute(args);
+            MelonLogger.Msg("Packaged product into Baggie!");
+        }
+        if (GUILayout.Button("Jar", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.PackageProduct command = new Il2CppScheduleOne.Console.PackageProduct();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add("Jar");
+            command.Execute(args);
+            MelonLogger.Msg("Packaged product into Jar!");
+        }
+        if (GUILayout.Button("Brick", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.PackageProduct command = new Il2CppScheduleOne.Console.PackageProduct();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add("Brick");
+            command.Execute(args);
+            MelonLogger.Msg("Packaged product into Brick!");
         }
         GUILayout.EndHorizontal();
 
@@ -531,24 +669,12 @@ public class NastyModClass : MelonMod
         }
         GUILayout.EndHorizontal();
 
-        // ** Max Dealer Customers slider
-        /* GUILayout.BeginHorizontal();
-        GUILayout.Label("Max Dealer Customers: " + _moddedDealerMaxCustomers);
-        _moddedDealerMaxCustomers = (int)GUILayout.HorizontalSlider(_moddedDealerMaxCustomers, 1, 100);
-        GUILayout.EndHorizontal(); */
-
-        // ** Deaddrop Wait Per Item slider
-        /* GUILayout.BeginHorizontal();
-        GUILayout.Label("Deaddrop Wait Per Item: " + __moddedDeaddropWaitPerItem);
-        __moddedDeaddropWaitPerItem = (int)GUILayout.HorizontalSlider(__moddedDeaddropWaitPerItem, 1, 100);
-        GUILayout.EndHorizontal(); */
-
         // Spacer
         GUILayout.Space(20);
 
         // ** Unlock all achievements button
         GUILayout.BeginHorizontal();
-        if (GUILayout.Button("Unlock all achievements", GUILayout.Width(menuWidth - (30 * 2)), GUILayout.Height(24)))
+        if (GUILayout.Button("Unlock all achievements", GUILayout.Width(menuWidth - (30 * 2) - 20), GUILayout.Height(24)))
         {
             foreach (var achievement in Enum.GetValues(typeof(AchievementManager.EAchievement)))
             {
@@ -556,6 +682,8 @@ public class NastyModClass : MelonMod
             }
         }
         GUILayout.EndHorizontal();
+
+        GUILayout.EndScrollView();
 
         GUILayout.EndArea();
     }
@@ -649,6 +777,114 @@ public class NastyModClass : MelonMod
         GUILayout.EndArea();
     }
 
+    private void RenderTeleportTab()
+    {
+        GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
+
+        // Tab Title
+        GUILayout.Label("Teleport", _headerStyle);
+
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** Scrollable content area
+        _npcTeleportScrollPosition = GUILayout.BeginScrollView(_npcTeleportScrollPosition, GUILayout.Width(menuWidth - (menuSpacing * 4)), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 60));
+
+        // ** Property Teleport Section
+        GUILayout.Label("Teleport to Properties:");
+        GUILayout.Space(5);
+        
+        int propertyButtonCount = 0;
+        GUILayout.BeginHorizontal();
+        foreach (var property in propertys)
+        {
+            if (propertyButtonCount > 0 && propertyButtonCount % 4 == 0)
+            {
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+            }
+            
+            if (GUILayout.Button(property, GUILayout.Width(140), GUILayout.Height(24)))
+            {
+                try
+                {
+                    GameObject propertyObject = GameObject.Find(property);
+                    if (propertyObject != null)
+                    {
+                        Player.Local.transform.position = propertyObject.transform.position + new Vector3(0, 2, 0);
+                        MelonLogger.Msg($"Teleported to property: {property}");
+                    }
+                    else
+                    {
+                        MelonLogger.Warning($"Property not found: {property}");
+                    }
+                }
+                catch (Exception ex)
+                {
+                    MelonLogger.Error($"Error teleporting to property: {ex.Message}");
+                }
+            }
+            propertyButtonCount++;
+        }
+        GUILayout.EndHorizontal();
+
+        // Spacer
+        GUILayout.Space(20);
+
+        // ** NPC Teleport Section
+        GUILayout.Label("Teleport to NPCs:");
+        
+        // Spacer
+        GUILayout.Space(5);
+
+        // ** NPC Teleport buttons
+        int columns = 3;
+        int currentColumn = 0;
+        GUILayout.BeginHorizontal();
+        
+        foreach (var npcEntry in _npcIdMap)
+        {
+            if (currentColumn == columns)
+            {
+                currentColumn = 0;
+                GUILayout.EndHorizontal();
+                GUILayout.BeginHorizontal();
+            }
+
+            string displayName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(npcEntry.Key.Replace(".", " "));
+            int npcButtonWidth = ((menuWidth - (menuSpacing * 4) - 20) - (10 * (columns - 1))) / columns;
+            
+            if (GUILayout.Button(displayName, GUILayout.Width(npcButtonWidth), GUILayout.Height(30)))
+            {
+                bool npcFound = false;
+                foreach (NPC npc in NPCManager.NPCRegistry)
+                {
+                    string npcFullName = npc.FirstName + "_" + npc.LastName;
+                    if (npcFullName.Equals(npcEntry.Value, StringComparison.OrdinalIgnoreCase))
+                    {
+                        Player.Local.transform.position = npc.transform.position + new Vector3(0, 0, 2);
+                        MelonLogger.Msg($"Teleported to {displayName}");
+                        npcFound = true;
+                        break;
+                    }
+                }
+                if (!npcFound)
+                {
+                    MelonLogger.Warning($"NPC not found: {displayName}");
+                }
+            }
+
+            currentColumn++;
+        }
+        
+        GUILayout.EndHorizontal();
+        
+        // End scrollview
+        GUILayout.EndScrollView();
+
+        GUILayout.EndArea();
+    }
+
     private void RenderCreditsTab()
     {
         GUILayout.BeginArea(new Rect(15, 15, menuWidth - (menuSpacing * 4), menuHeight - 110 - (menuSpacing * 2)));
@@ -658,6 +894,9 @@ public class NastyModClass : MelonMod
 
         // **Spacer**
         GUILayout.Space(10);
+
+        // ** Scrollable content
+        _creditsTabScrollPosition = GUILayout.BeginScrollView(_creditsTabScrollPosition, GUILayout.Width(menuWidth - (menuSpacing * 4)), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 60));
 
         // **Creator**
         GUILayout.Label("This mod was created by nasty.codes");
@@ -671,6 +910,8 @@ public class NastyModClass : MelonMod
         GUILayout.Label("GitHub Copilot");
         GUILayout.Label("MelonLoader");
         GUILayout.Label("Jumpman");
+
+        GUILayout.EndScrollView();
 
         GUILayout.EndArea();
     }

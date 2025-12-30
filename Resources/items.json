@@ -8,7 +8,12 @@
 				"ogkush",
 				"sourdiesel",
 				"cocaine",
-				"meth"
+				"meth",
+				"babyblue",
+				"bikercrank",
+				"glass",
+				"shrooms",
+				"testweed"
 			]
 		},
 		{
@@ -33,7 +38,8 @@
 				"greencrackseed",
 				"ogkushseed",
 				"sourdieselseed",
-				"cocaseed"
+				"cocaseed",
+				"shroomseed"
 			]
 		},
 		{
@@ -55,7 +61,9 @@
 				"m1911mag",
 				"machete",
 				"revolvercylinder",
-				"revolver"
+				"revolver",
+				"pumpshotgun",
+				"shotgunshell"
 			]
 		},
 		{
@@ -69,7 +77,9 @@
 				"bed",
 				"smalltrashcan",
 				"TV",
-				"woodsquaretable"
+				"woodsquaretable",
+				"filingcabinet",
+				"safe"
 			]
 		},
 		{
@@ -124,7 +134,12 @@
 				"motoroil",
 				"mouthwash",
 				"paracetamol",
-				"viagra"
+				"viagra",
+				"pseudo",
+				"phosphorus",
+				"iodine",
+				"megabean",
+				"cocainebase"
 			]
 		},
 		{
@@ -132,7 +147,19 @@
 			"items": [
 				"floorlamp",
 				"displaycabinet",
-				"filingcabinet"
+				"filingcabinet",
+				"woodensign",
+				"metalsign",
+				"wallmountedshelf",
+				"antiquelamp",
+				"modernlamp",
+				"grandfatherclock",
+				"paintingbeachday",
+				"paintinglines",
+				"paintingduck",
+				"paintingmillie",
+				"paintingoffer",
+				"paintingrapscallion"
 			]
 		},
 		{
@@ -182,7 +209,8 @@
 				"cruiser",
 				"goldenskateboard",
 				"lightweightskateboard",
-				"skateboard"
+				"skateboard",
+				"offroadskateboard"
 			]
 		},
 		{
@@ -202,7 +230,12 @@
 				"babyblue",
 				"bikercrank",
 				"glass",
-				"testweed"
+				"testweed",
+				"brutdugloop",
+				"silverwatch",
+				"goldwatch",
+				"silverchain",
+				"goldchain"
 			]
 		}
 	]
