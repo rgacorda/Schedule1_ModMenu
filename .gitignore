@@ -2,7 +2,7 @@
 bin
 
 # Ignore obj directories
-obj
+# obj
 
 # Ignore .vs directory
 .vs
