@@ -48,6 +48,7 @@ public class NastyModClass : MelonMod
 
     private int _moddedCash = 1000;
     private int _moddedBalance = 1000;
+    private int _moddedXp = 100;
 
     private HarmonyLib.Harmony harmony;
 
@@ -465,6 +466,24 @@ public class NastyModClass : MelonMod
         }
         GUILayout.EndHorizontal();
 
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** Give XP
+        GUILayout.BeginHorizontal();
+        GUILayout.BeginVertical();
+        GUILayout.Label("Give XP: " + _moddedXp);
+        _moddedXp = (int)GUILayout.HorizontalSlider(_moddedXp, 0, 10000, GUILayout.Width((menuWidth - (30 * 2)) - 170), GUILayout.Height(20));
+        GUILayout.EndVertical();
+        if (GUILayout.Button("Give", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.GiveXP command = new Il2CppScheduleOne.Console.GiveXP();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add(_moddedXp.ToString());
+            command.Execute(args);
+        }
+        GUILayout.EndHorizontal();
+
         GUILayout.EndScrollView();
 
         GUILayout.EndArea();
@@ -501,8 +520,34 @@ public class NastyModClass : MelonMod
         GUILayout.BeginHorizontal();
         GUILayout.Label("ESP Distance: " + _espDistance.ToString("F0") + "m");
         _espDistance = GUILayout.HorizontalSlider(_espDistance, 10f, 200f, GUILayout.Width(180), GUILayout.Height(10));
+        GUILayout.EndHorizontal();
 
-        
+        // Spacer
+        GUILayout.Space(20);
+
+        // ** Clear Trash button
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Clear All Trash", GUILayout.Width(200), GUILayout.Height(24)))
+        {
+            Il2CppScheduleOne.Console.ClearTrash command = new Il2CppScheduleOne.Console.ClearTrash();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            command.Execute(args);
+            MelonLogger.Msg("Cleared all trash!");
+        }
+        GUILayout.EndHorizontal();
+
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** Save Game button
+        GUILayout.BeginHorizontal();
+        if (GUILayout.Button("Save Game", GUILayout.Width(200), GUILayout.Height(24)))
+        {
+            Il2CppScheduleOne.Console.Save command = new Il2CppScheduleOne.Console.Save();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            command.Execute(args);
+            MelonLogger.Msg("Game saved!");
+        }
         GUILayout.EndHorizontal();
 
         GUILayout.EndScrollView();
