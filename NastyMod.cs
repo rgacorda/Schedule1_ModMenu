@@ -46,7 +46,6 @@ public class NastyModClass : MelonMod
     private Dictionary<string, List<string>> itemTree;
     private List<string> propertys;
 
-    private int _moddedStackSize = 100;
     private int _moddedCash = 1000;
     private int _moddedBalance = 1000;
 
@@ -416,6 +415,56 @@ public class NastyModClass : MelonMod
         PlayerMovement.JumpMultiplier = _jumpMultiplier;
         GUILayout.EndHorizontal();
 
+        // Spacer
+        GUILayout.Space(20);
+
+        // ** Cash Modifier
+        GUILayout.BeginHorizontal();
+        GUILayout.BeginVertical();
+        GUILayout.Label("Cash: " + _moddedCash);
+        _moddedCash = (int) GUILayout.HorizontalSlider(_moddedCash, 0, 100000, GUILayout.Width((menuWidth - (30 * 2)) - 170), GUILayout.Height(20));
+        GUILayout.EndVertical();
+        if (GUILayout.Button("Add", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.ChangeCashCommand command = new Il2CppScheduleOne.Console.ChangeCashCommand();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add(_moddedCash.ToString());
+            command.Execute(args);
+        }
+        if (GUILayout.Button("Remove", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.ChangeCashCommand command = new Il2CppScheduleOne.Console.ChangeCashCommand();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add($"-{_moddedCash.ToString()}");
+            command.Execute(args);
+        }
+        GUILayout.EndHorizontal();
+
+        // Spacer
+        GUILayout.Space(10);
+
+        // ** Balance Modifier
+        GUILayout.BeginHorizontal();
+        GUILayout.BeginVertical();
+        GUILayout.Label("Balance: " + _moddedBalance);
+        _moddedBalance = (int)GUILayout.HorizontalSlider(_moddedBalance, 0, 100000, GUILayout.Width((menuWidth - (30 * 2)) - 170), GUILayout.Height(20));
+        GUILayout.EndVertical();
+        if (GUILayout.Button("Add", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand command = new Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add(_moddedBalance.ToString());
+            command.Execute(args);
+        }
+        if (GUILayout.Button("Remove", _buttonStyle))
+        {
+            Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand command = new Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand();
+            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
+            args.Add($"-{_moddedBalance.ToString()}");
+            command.Execute(args);
+        }
+        GUILayout.EndHorizontal();
+
         GUILayout.EndScrollView();
 
         GUILayout.EndArea();
@@ -452,6 +501,8 @@ public class NastyModClass : MelonMod
         GUILayout.BeginHorizontal();
         GUILayout.Label("ESP Distance: " + _espDistance.ToString("F0") + "m");
         _espDistance = GUILayout.HorizontalSlider(_espDistance, 10f, 200f, GUILayout.Width(180), GUILayout.Height(10));
+
+        
         GUILayout.EndHorizontal();
 
         GUILayout.EndScrollView();
@@ -485,7 +536,7 @@ public class NastyModClass : MelonMod
 
         // ** Item Amount slider
         GUILayout.Label($"Item Amount: {_itemAmount}");
-        _itemAmount = (int)GUILayout.HorizontalSlider(_itemAmount, 1, _moddedStackSize);
+        _itemAmount = (int)GUILayout.HorizontalSlider(_itemAmount, 1, 100);
 
         GUILayout.EndArea();
         #endregion
@@ -513,7 +564,7 @@ public class NastyModClass : MelonMod
 
                     int availableWidth = ((menuWidth - (menuSpacing * 4) - menuSpacing) / 4) * 3;
                     if (GUILayout.Button(item, GUILayout.Width((availableWidth - (5 * columns-1)) / columns)))
-                    {
+                    {   
                         Il2CppScheduleOne.Console.AddItemToInventoryCommand command = new Il2CppScheduleOne.Console.AddItemToInventoryCommand();
                         Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
                         args.Add(item);
@@ -544,13 +595,6 @@ public class NastyModClass : MelonMod
 
         // ** Scrollable content
         _miscTabScrollPosition = GUILayout.BeginScrollView(_miscTabScrollPosition, GUILayout.Width(menuWidth - (menuSpacing * 4)), GUILayout.Height(menuHeight - 110 - (menuSpacing * 2) - 60));
-
-        // ** Default Stack Limit slider
-        GUILayout.Label("Default Stack Limit: " + _moddedStackSize);
-        _moddedStackSize = (int)GUILayout.HorizontalSlider(_moddedStackSize, 10, 250);
-
-        // Spacer
-        GUILayout.Space(10);
 
         // Note
         GUILayout.Label("Change equipped quality type");
@@ -608,64 +652,6 @@ public class NastyModClass : MelonMod
             args.Add("Brick");
             command.Execute(args);
             MelonLogger.Msg("Packaged product into Brick!");
-        }
-        GUILayout.EndHorizontal();
-
-        // Spacer
-        GUILayout.Space(20);
-
-        // ** Cash Modifier
-        GUILayout.BeginHorizontal();
-        GUILayout.BeginVertical();
-        GUILayout.Label("Cash: " + _moddedCash);
-        _moddedCash = (int) GUILayout.HorizontalSlider(_moddedCash, 0, 100000, GUILayout.Width((menuWidth - (30 * 2)) - 170), GUILayout.Height(20));
-        GUILayout.EndVertical();
-        if (GUILayout.Button("Add", _buttonStyle))
-        {
-            Il2CppScheduleOne.Console.ChangeCashCommand command = new Il2CppScheduleOne.Console.ChangeCashCommand();
-            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
-
-            args.Add(_moddedCash.ToString());
-
-            command.Execute(args);
-        }
-        if (GUILayout.Button("Remove", _buttonStyle))
-        {
-            Il2CppScheduleOne.Console.ChangeCashCommand command = new Il2CppScheduleOne.Console.ChangeCashCommand();
-            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
-
-            args.Add($"-{_moddedCash.ToString()}");
-
-            command.Execute(args);
-        }
-        GUILayout.EndHorizontal();
-
-        // Spacer
-        GUILayout.Space(10);
-
-        // ** Balance Modifier
-        GUILayout.BeginHorizontal();
-        GUILayout.BeginVertical();
-        GUILayout.Label("Balance: " + _moddedBalance);
-        _moddedBalance = (int)GUILayout.HorizontalSlider(_moddedBalance, 0, 100000, GUILayout.Width((menuWidth - (30 * 2)) - 170), GUILayout.Height(20));
-        GUILayout.EndVertical();
-        if (GUILayout.Button("Add", _buttonStyle))
-        {
-            Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand command = new Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand();
-            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
-
-            args.Add(_moddedBalance.ToString());
-
-            command.Execute(args);
-        }
-        if (GUILayout.Button("Remove", _buttonStyle))
-        {
-            Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand command = new Il2CppScheduleOne.Console.ChangeOnlineBalanceCommand();
-            Il2CppSystem.Collections.Generic.List<string> args = new Il2CppSystem.Collections.Generic.List<string>();
-
-            args.Add($"-{_moddedBalance.ToString()}");
-
-            command.Execute(args);
         }
         GUILayout.EndHorizontal();
 
@@ -827,57 +813,6 @@ public class NastyModClass : MelonMod
             propertyButtonCount++;
         }
         GUILayout.EndHorizontal();
-
-        // Spacer
-        GUILayout.Space(20);
-
-        // ** NPC Teleport Section
-        GUILayout.Label("Teleport to NPCs:");
-        
-        // Spacer
-        GUILayout.Space(5);
-
-        // ** NPC Teleport buttons
-        int columns = 3;
-        int currentColumn = 0;
-        GUILayout.BeginHorizontal();
-        
-        foreach (var npcEntry in _npcIdMap)
-        {
-            if (currentColumn == columns)
-            {
-                currentColumn = 0;
-                GUILayout.EndHorizontal();
-                GUILayout.BeginHorizontal();
-            }
-
-            string displayName = System.Globalization.CultureInfo.CurrentCulture.TextInfo.ToTitleCase(npcEntry.Key.Replace(".", " "));
-            int npcButtonWidth = ((menuWidth - (menuSpacing * 4) - 20) - (10 * (columns - 1))) / columns;
-            
-            if (GUILayout.Button(displayName, GUILayout.Width(npcButtonWidth), GUILayout.Height(30)))
-            {
-                bool npcFound = false;
-                foreach (NPC npc in NPCManager.NPCRegistry)
-                {
-                    string npcFullName = npc.FirstName + "_" + npc.LastName;
-                    if (npcFullName.Equals(npcEntry.Value, StringComparison.OrdinalIgnoreCase))
-                    {
-                        Player.Local.transform.position = npc.transform.position + new Vector3(0, 0, 2);
-                        MelonLogger.Msg($"Teleported to {displayName}");
-                        npcFound = true;
-                        break;
-                    }
-                }
-                if (!npcFound)
-                {
-                    MelonLogger.Warning($"NPC not found: {displayName}");
-                }
-            }
-
-            currentColumn++;
-        }
-        
-        GUILayout.EndHorizontal();
         
         // End scrollview
         GUILayout.EndScrollView();
@@ -991,20 +926,6 @@ public class NastyModClass : MelonMod
         public static void Postfix(ref bool __result)
         {
             __result = true;
-        }
-    }
-
-    [HarmonyPatch]
-    public class StackLimitPatch
-    {
-        [HarmonyPatch(typeof(ItemInstance), "StackLimit", MethodType.Getter)]
-        [HarmonyPostfix]
-        public static void Postfix(ref int __result)
-        {
-            if (NastyModClass.Instance != null)
-            {
-                __result = (int)NastyModClass.Instance._moddedStackSize;
-            }
         }
     }
 }
